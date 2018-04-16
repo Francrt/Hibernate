@@ -25,7 +25,7 @@ interface InterfazBase {
 
     boolean Registrar(); 
          
-    boolean UnRegister();
+    void UnRegister();
             
     void LogIn();
     

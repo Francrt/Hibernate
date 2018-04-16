@@ -1,17 +1,8 @@
 package Controlador;
 
-
-import Modelo.ConectaDB;
-import Modelo.Usuario;
-import java.io.PrintWriter;
-import static java.lang.System.out;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import javax.servlet.http.HttpServlet;
+import Hibernate.Hibernate;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -19,46 +10,37 @@ import javax.servlet.http.HttpServlet;
  * and open the template in the editor.
  */
 
+
 /**
  *
  * @author admin
  */
-public class UsuarioDAO {
-    
-    
-        ArrayList<Usuario> Ussers;
-        private ConectaDB conection;
-
-        public boolean Register(Usuario usser) {
-        boolean answerRegister=false;
-        Statement stm = null;
-        Connection con = null;
-        String sql = "INSERT INTO usuario(Nickname,Password, Email) values ('" +usser.getNickName() + "','" + usser.getPassword() + "','" + usser.getEmail() + "')";
-        try {
-            con = conection.conect();
-            stm = con.createStatement();
-            stm.execute(sql);
-            answerRegister = true;
-            stm.close();
-            con.close();
-        } catch (SQLException e) {
-            answerRegister = false;
-          
-            out.println("Error:método registrar");
-            e.printStackTrace();
-        }
-        return answerRegister;
-    }
-       
-    public void Unregister()  {
+    public class UsuarioDAO implements InterfazBase {
         
-        Ussers.get(1);
-        System.out.println(Ussers.get(1));
-    }
-       
-    
-    public static void main (String[] args){
-        UsuarioDAO test = new UsuarioDAO();
-        test.Unregister();
-    }
+        Session session = null;
+        
+        public boolean Register(){
+        boolean regisAnswer = false;
+        
+         try{
+            regisAnswer = true;
+            this.session = Hibernate.getSessionFactory().getCurrentSession();
+            org.hibernate.Transaction tx = session.beginTransaction();
+            Query q = session.createQuery ("from Film as film where film.filmId between '");//Tengo que tener algo que saque objetos al recibir datos.  
+            session.save(q);
+         }
+         catch (Exception e){
+             e.printStackTrace();
+         }
+        
+         return regisAnswer;        
+        }
+        
+        public void UnRegister(String nickname, String password){
+            this.session = Hibernate.getSessionFactory().getCurrentSession();
+            org.hibernate.Transaction tx = session.beginTransaction();
+            Query q = session.createQuery ("from Usuario as ussers where usser.Nickname="+nickname+"' & usser.Password="+password+"'");
+            session.saveOrUpdate(q);
+        }
+        
 }

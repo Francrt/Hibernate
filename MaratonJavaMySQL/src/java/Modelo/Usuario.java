@@ -4,14 +4,6 @@
  * and open the template in the editor.
  */
 package Modelo;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import Modelo.ConectaDB;
-
 /**
  *
  * @author admin
@@ -24,7 +16,6 @@ public class Usuario {
     private String nickName;
     private String password;    
     private String Email; 
-    private ConectaDB conexion;
 
     
     public Usuario(int id, String nickName, String password, String Email) {
