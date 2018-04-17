@@ -4,6 +4,9 @@
  * and open the template in the editor.
  */
 package Controlador;
+
+import java.util.List;
+
 /**
  *
  * @author admin
@@ -27,17 +30,17 @@ interface InterfazBase {
          
     void UnRegister();
             
-    void LogIn();
+    boolean LogIn();
     
     void LogOut();
        
-    boolean ConsultaInscripcion();
+    List ViewEnrollment();
     
-    void VerMaratones();
+    List ViewMarathon();
     
-    boolean ModificarDatos();
+    boolean UpdateData();
     
-    void VerClasificación();
+    List ViewClasification();
             
     
     

@@ -45,4 +45,7 @@ Contributor(s):
   <table-filter match-name="administrador"/>
   <table-filter match-name="usuario"/>
   <table-filter match-name="maraton"/>
+  <table-filter match-name="usuariojuez"/>
+  <table-filter match-name="usuarioadmin"/>
+  <table-filter match-name="usuariomaraton"/>
 </hibernate-reverse-engineering>

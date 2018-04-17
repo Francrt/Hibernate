@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Modelo;
+
 import Controlador.JuezDAO;
 import java.util.HashMap;
 import Modelo.Usuario;
@@ -24,10 +24,9 @@ public class Maraton {
     private int id;
     private double longitudRecorrido;
     private String ubicacion;
-    private JuezDAO juez; //faltaria la clase Juez
     
-    Map<Usuario,String> participantes=new HashMap<Usuario, String>(); // en este map se incluirán los usuarios inscritos 
-    Map<String,String> dorsalMarca=new HashMap<String, String>(); // en este map se relaciona un dorsal con un tiempo.
+    Map<Usuario,String> participantes = new HashMap<Usuario, String>(); // en este map se incluirán los usuarios inscritos 
+    Map<String,String> dorsalMarca = new HashMap<String, String>(); // en este map se relaciona un dorsal con un tiempo.
 
     //metodo constructor
     public Maraton(Date fecha, int id, double longitudRecorrido, String ubicacion) {
