@@ -30,6 +30,11 @@ public class Usuariomaraton  implements java.io.Serializable {
 
     public Usuariomaraton() {
     }
+    
+    public Usuariomaraton(Maraton maraton, Usuario usuario, int dorsal){
+        this.maraton = maraton;
+        this.usuario = usuario;
+    }
 
 	
     public Usuariomaraton(UsuariomaratonId id, Maraton maraton, Usuario usuario) {

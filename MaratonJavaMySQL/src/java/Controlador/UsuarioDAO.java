@@ -18,7 +18,7 @@ import org.hibernate.Session;
  *
  * @author admin
  */
-    public class UsuarioDAO implements InterfazBase {
+    public class UsuarioDAO {
         
         Session session = null;
         Usuario master = new Usuario();
@@ -41,8 +41,7 @@ import org.hibernate.Session;
         
         public void UnRegister(String nickname, String password){
             this.session = Hibernate.getSessionFactory().getCurrentSession();    
-            Query unregis = session.createQuery ("Select Usuario "
-                            + "from Usuario usser, Bar Nickname, Bar Password "
+            Query unregis = session.createQuery ("from Usuario as usser "
                             + "where usser.Nickname ='"+nickname+"' & usser.Password ='"+password+"'");
             session.delete(unregis);         
         }
@@ -57,6 +56,7 @@ import org.hibernate.Session;
                                 + "where usser.Nickname ='"+nickname+"' & usser.Password ='"+password+"'");
                     if(login.getNickname().equals(nickname) &&
                        login.getPassword().equals(password){
+                    //¿?¿?¿?¿?
                         
                     }
                     
@@ -70,11 +70,13 @@ import org.hibernate.Session;
             this.session = Hibernate.getSessionFactory().getCurrentSession();
         }
         
-        public List ViewEnrollment(){
-            List<Usuario> Enrollments = null;
+        public List ViewEnrollment(int idusuario){
+            List<Maraton> Enrollments = null;
             try{
-                org.hibernate.Transaction tx = session.beginTransaction();//get Entity by ID para hashmap
-                
+                org.hibernate.Transaction tx = session.beginTransaction();
+                Query enrollment = session.createQuery("from Usuariomaraton get entity by '"+idusuario+"' where Maraton is not null");
+                Enrollments = (List<Maraton>) enrollment.list();
+                session.saveOrUpdate(Enrollments);
             }catch (Exception e){
                 e.printStackTrace();
                 
@@ -87,6 +89,7 @@ import org.hibernate.Session;
                 org.hibernate.Transaction tx = session.beginTransaction();
                 Query run = session.createQuery("from Maraton as run where run.fecha is not null");
                 Runs = (List<Maraton>) run.list();
+                session.save(Runs);
                 
             }catch (Exception e){
                 e.printStackTrace();
@@ -99,12 +102,25 @@ import org.hibernate.Session;
                 update = true;
                 this.session = Hibernate.getSessionFactory().getCurrentSession();
                 Query up = session.createQuery ("From Usuario usser where"
-                        + "usser.Password ='"+password+"' & usser.Email ='"+email+"'");
-                
+                        + "usser.Password ='"+password+"' or usser.Email ='"+email+"'");
+                session.saveOrUpdate(up);
                 
             }catch (Exception e){
                 e.printStackTrace();
            
             }return update;
+        }
+        
+        public List ViewClasification(int idusuario){
+             List<Usuario> Class = null;
+            try{
+                org.hibernate.Transaction tx = session.beginTransaction();
+                Query clasification = session.createQuery("from Usuariomaraton get entity by '"+idusuario+"' where Tiempo is not null");
+                Class = (List<Usuario>) clasification.list();
+                session.saveOrUpdate(Class);
+                
+            }catch (Exception e){
+                e.printStackTrace();
+            }return Class;
         }
 }
