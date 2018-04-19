@@ -29,8 +29,9 @@ import org.hibernate.Session;
          try{
             regisAnswer = true;
             this.session = Hibernate.getSessionFactory().getCurrentSession();
-            Usuario regis = new Usuario(master.getNickname(), master.getPassword(), master.getEmail());
+            Usuario regis = new Usuario(master.getNickname(), master.getPassword(), master.getEmail(), master.getDNI(), master.getTelefono());
             session.save(regis);
+            session.close();
          }
          catch (Exception e){
              e.printStackTrace();
@@ -42,24 +43,27 @@ import org.hibernate.Session;
         public void UnRegister(String nickname, String password){
             this.session = Hibernate.getSessionFactory().getCurrentSession();    
             Query unregis = session.createQuery ("from Usuario as usser "
-                            + "where usser.Nickname ='"+nickname+"' & usser.Password ='"+password+"'");
-            session.delete(unregis);         
+                            + "where usser.nickname ='"+nickname+"' & usser.password ='"+password+"'");
+            session.delete(unregis);  
+            session.close();
         }
         
-        public boolean LogIn(String nickname, String password){
+        public boolean LogIn(String nickname, String password, String admin, String adminpass){
             boolean inAnswer = false;
-            
+            Usuario usser = null;
                 try{
                     inAnswer = true;
                     this.session = Hibernate.getSessionFactory().getCurrentSession();
-                    Query login = session.createQuery ("From Usuario usser  "
-                                + "where usser.Nickname ='"+nickname+"' & usser.Password ='"+password+"'");
-                    if(login.getNickname().equals(nickname) &&
-                       login.getPassword().equals(password){
+                    Query login = session.createQuery ("from Usuario as usser  "
+                                + "where usser.nickname ='"+nickname+"' & usser.password ='"+password+"'");
+                    usser = (Usuario)login.uniqueResult(); 
+                    session.save(usser);
+                    session.close();
+                    /*Usuario log = login.uniqueResult();
+                    if(login.getNickname().equals("admin") &&
+                       login.getPassword().equals("1234"){
                     //¿?¿?¿?¿?
-                        
-                    }
-                    
+                    */                                             
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -72,27 +76,35 @@ import org.hibernate.Session;
         
         public List ViewEnrollment(int idusuario){
             List<Maraton> Enrollments = null;
-            try{
-                org.hibernate.Transaction tx = session.beginTransaction();
-                Query enrollment = session.createQuery("from Usuariomaraton get entity by '"+idusuario+"' where Maraton is not null");
+            this.session = Hibernate.getSessionFactory().getCurrentSession();
+            org.hibernate.Transaction tx = session.beginTransaction();
+            
+            try{             
+                Query enrollment = session.createQuery("from Usuariomaraton get entity by '"+idusuario+"' where dorsal is not null");
                 Enrollments = (List<Maraton>) enrollment.list();
                 session.saveOrUpdate(Enrollments);
+                tx.commit();
+                session.close();
             }catch (Exception e){
                 e.printStackTrace();
-                
+                tx.rollback();
             }return Enrollments;           
         }
         
         public List ViewMarathon(){
             List<Maraton> Runs = null;
+            this.session = Hibernate.getSessionFactory().getCurrentSession();
+            org.hibernate.Transaction tx = session.beginTransaction();
+                
             try{
-                org.hibernate.Transaction tx = session.beginTransaction();
                 Query run = session.createQuery("from Maraton as run where run.fecha is not null");
                 Runs = (List<Maraton>) run.list();
                 session.save(Runs);
-                
+                tx.commit();
+                session.close();
             }catch (Exception e){
                 e.printStackTrace();
+                tx.rollback();
             }return Runs;
         }
         
@@ -101,9 +113,10 @@ import org.hibernate.Session;
             try{
                 update = true;
                 this.session = Hibernate.getSessionFactory().getCurrentSession();
-                Query up = session.createQuery ("From Usuario usser where"
+                Query up = session.createQuery ("from Usuario usser where"
                         + "usser.Password ='"+password+"' or usser.Email ='"+email+"'");
                 session.saveOrUpdate(up);
+                session.close();
                 
             }catch (Exception e){
                 e.printStackTrace();
@@ -113,14 +126,19 @@ import org.hibernate.Session;
         
         public List ViewClasification(int idusuario){
              List<Usuario> Class = null;
+             this.session = Hibernate.getSessionFactory().getCurrentSession();
+             org.hibernate.Transaction tx = session.beginTransaction();
+             
             try{
-                org.hibernate.Transaction tx = session.beginTransaction();
                 Query clasification = session.createQuery("from Usuariomaraton get entity by '"+idusuario+"' where Tiempo is not null");
                 Class = (List<Usuario>) clasification.list();
                 session.saveOrUpdate(Class);
+                tx.commit();
+                session.close();
                 
             }catch (Exception e){
                 e.printStackTrace();
+                tx.rollback();
             }return Class;
         }
 }

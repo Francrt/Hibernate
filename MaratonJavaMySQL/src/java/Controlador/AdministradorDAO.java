@@ -9,7 +9,6 @@ import Hibernate.Hibernate;
 import Modelo.Juez;
 import Modelo.Maraton;
 import Modelo.Usuario;
-import java.util.Date;
 import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -22,6 +21,7 @@ public class AdministradorDAO extends UsuarioDAO {
     Session session = null;
     Maraton run = new Maraton();
     Usuario master = new Usuario();
+    Juez masterJ = new Juez();
     
     
     public List ShowUsserList(){
@@ -38,19 +38,65 @@ public class AdministradorDAO extends UsuarioDAO {
             }return Ussers;
     }
     
-    public List GetUsserData(int idusuario, String nickname, String password, String email){
+    public List GetUsserData(int idusuario){
         List<Usuario> Data = null;
         try{
             this.session = Hibernate.getSessionFactory().getCurrentSession();
             org. hibernate.Transaction tx = session.beginTransaction();
-            Query getU = session.createQuery("from  Usuario as usser where usser.IDUsuario="+idusuario+"' "
-                      + "or usser.Nickname="+nickname+"'"
-                      + "or usser.Email="+email+"'");
+            Query getU = session.createQuery("from  Usuario as usser where usser.IDUsuario="+idusuario+"'");
             Data = (List<Usuario>) getU.list();
             session.saveOrUpdate(Data);
         }catch (Exception e){
             e.printStackTrace();
             
+        }return Data;
+    }
+    
+    
+    public List GetUsserData(String nickname, String password, String email, String telefono, String dni){
+        List<Usuario> Data = null;
+        this.session = Hibernate.getSessionFactory().getCurrentSession();
+        org.hibernate.Transaction tx= session.beginTransaction();
+        
+        try{
+            if (nickname != null && password == null && email == null && telefono == null && dni == null){
+                Query getU = session.createQuery("from  Usuario as usser where usser.nickname="+nickname+"'");  
+                Data = (List<Usuario>) getU.list();
+                session.saveOrUpdate(Data);
+                tx.commit();
+                session.close();}
+            
+            else if (password != null && nickname == null && email == null && telefono == null && dni == null){
+                Query getU = session.createQuery("from  Usuario as usser where usser.password="+password+"'");
+                Data = (List<Usuario>) getU.list();
+                session.saveOrUpdate(Data);
+                tx.commit();    
+                session.close();}  
+            
+            else if (email != null && password == null && email == null && telefono == null && dni == null){
+                Query getU = session.createQuery("from  Usuario as usser where usser.email="+email+"'");
+                Data = (List<Usuario>) getU.list();
+                session.saveOrUpdate(Data);
+                tx.commit();   
+                session.close();}
+            
+            else if (telefono != null && password == null && email == null && nickname == null && dni == null){
+                Query getU = session.createQuery("from  Usuario as usser where usser.telefono="+telefono+"'");
+                Data = (List<Usuario>) getU.list();
+                session.saveOrUpdate(Data);
+                tx.commit();   
+                session.close();}
+            
+            else if (dni != null && password == null && email == null && telefono == null && nickname == null){
+                Query getU = session.createQuery("from  Usuario as usser where usser.dni="+dni+"'");
+                Data = (List<Usuario>) getU.list();
+                session.saveOrUpdate(Data);
+                tx.commit();    
+                session.close();}
+            else return Data;
+
+        }catch (Exception e){
+            e.printStackTrace();
         }return Data;
     }
     
@@ -67,7 +113,7 @@ public class AdministradorDAO extends UsuarioDAO {
         }return Judge;
     }
     
-    public boolean CreateMarathon(Date fecha, Double longitud, String ubicacion, int idjuez){
+    public boolean CreateMarathon(String fecha, Double longitud, String ubicacion, int idjuez){
         boolean newMarathon = false;
         
         try{
@@ -82,26 +128,88 @@ public class AdministradorDAO extends UsuarioDAO {
         }return newMarathon;      
     }
     
-    public List GetMarathonData(int idmaraton, Date fecha, Double longitud, String ubicacion, int idjuez){
+    public List GetMarathonData(Integer idmaraton, Integer idjuez){
         List<Maraton> Datamar = null;
+        this.session = Hibernate.getSessionFactory().getCurrentSession();
+        org.hibernate.Transaction tx= session.beginTransaction();
+        
         try{
-            this.session = Hibernate.getSessionFactory().getCurrentSession();
-            org.hibernate.Transaction tx= session.beginTransaction();
-            Query dmar = session.createQuery("from Maraton as marathon where marathon.IDMaraton="+idmaraton+"'"
-                       + "or marathon.Fecha="+fecha+"'"
-                       + "or marathon.Longitud="+longitud+"'"
-                       + "or marathon.Ubicacion="+ubicacion+"'"
-                       + "or marathon.IDJuez="+idjuez+"'");    
+            if (idmaraton != null && idjuez == null){
+            Query dmar = session.createQuery("from Maraton as marathon where marathon.idmaraton='"+idmaraton+"'");  
             Datamar = (List<Maraton>) dmar.list();
-            session.saveOrUpdate(Datamar);            
+            session.saveOrUpdate(Datamar);
+            tx.commit();
+            session.close();}
+            
+        else if (idjuez != null && idmaraton == null){
+            Query dmar = session.createQuery("from Maraton as marathon where marathon.idjuez='"+idjuez+"'");
+            Datamar = (List<Maraton>) dmar.list();
+            session.saveOrUpdate(Datamar);
+            tx.commit();   
+            session.close();}
+            
         }catch (Exception e){
             e.printStackTrace();
         }return Datamar;
     }
     
+    public List GetMarathonData(String fecha, String ubicacion){
+        List<Maraton> Datamar = null;
+            this.session = Hibernate.getSessionFactory().getCurrentSession();
+            org.hibernate.Transaction tx= session.beginTransaction();
+        try{
+            if(fecha != null && ubicacion == null){
+            Query dmar = session.createQuery("from Maraton as marathon where marathon.fecha="+fecha+"'");   
+            Datamar = (List<Maraton>) dmar.list();
+            session.saveOrUpdate(Datamar);
+            tx.commit();
+            session.close();}
+            
+            else if (ubicacion != null && fecha == null){
+            Query dmar = session.createQuery("from Maraton as marathon where marathon.ubicacion="+ubicacion+"'");   
+            Datamar = (List<Maraton>) dmar.list();
+            session.saveOrUpdate(Datamar);
+            tx.commit();   
+            session.close();}
+        
+        }catch (Exception e){
+            e.printStackTrace();
+            tx.rollback();
+        }return Datamar;
+    }
+    
+    public List GetMarathonData(Double longitud){
+        List<Maraton> Datamar = null;
+        try{
+            this.session = Hibernate.getSessionFactory().getCurrentSession();
+            org.hibernate.Transaction tx= session.beginTransaction();
+            Query dmar = session.createQuery("from Maraton as marathon where marathon.longitud="+longitud+"'");  
+            Datamar = (List<Maraton>) dmar.list();
+            session.saveOrUpdate(Datamar);
+            tx.commit();
+            session.close();
+            
+        }catch (Exception e){
+            e.printStackTrace();
+        }return Datamar;
+    }
+
+    
     public boolean CreateJudge(){
         boolean newJ = false;
-        //ñkyuf
+        /* int idjuez = 0;
+        for(idjuez = 0; idjuez <=200; idjuez++){*/
+
+        try{
+            newJ = true;
+            this.session = Hibernate.getSessionFactory().getCurrentSession();
+            Juez newJudge = new Juez(masterJ.getIDJuez(), masterJ.getIDUsuario());
+            session.save(newJudge);
+            session.close();
+            
+        }catch (Exception e){
+            e.printStackTrace();
+        }     
         return newJ;
     }
     
@@ -111,7 +219,8 @@ public class AdministradorDAO extends UsuarioDAO {
             this.session = Hibernate.getSessionFactory().getCurrentSession();
             Query dusser = session.createQuery("from Usuario as usser"
                          + "where usser.Nickname ='"+nickname+"' & usser.Password ='"+password+"'");
-            session.delete(dusser);         
+            session.delete(dusser);
+            session.close();
 
     }
     
@@ -120,19 +229,25 @@ public class AdministradorDAO extends UsuarioDAO {
             this.session = Hibernate.getSessionFactory().getCurrentSession();
             Query dmarth = session.createQuery("from Maraton as marathon"
                          + "where marathon.IDMaraton ='"+idmaraton+"'");
-            session.delete(dmarth);              
+            session.delete(dmarth);  
+            session.close();
     }
     
-    public List ShowJudgeAvaiability(String disponibilidad){
+    public List ShowJudgeAvaiability(int idjuez){
         List<Juez> Avaiable = null;
-        try{
-            this.session = Hibernate.getSessionFactory().getCurrentSession();
-            org.hibernate.Transaction tx= session.beginTransaction();
-            Query jdav = session.createQuery("from Juez as judge where judge.Disponibilidad="+disponibilidad+"'");
+        this.session = Hibernate.getSessionFactory().getCurrentSession();
+        org.hibernate.Transaction tx= session.beginTransaction();
+        
+        try{         
+            Query jdav = session.createQuery("from Juez as judge where judge.IDJuez='"+idjuez+"' && is not in Usuariomaraton");
             Avaiable = (List<Juez>) jdav.list();
-            session.saveOrUpdate(Avaiable);            
+            session.saveOrUpdate(Avaiable);
+            tx.commit();
+            session.close();   
+            
         }catch (Exception e){
             e.printStackTrace();
+            tx.rollback();
         }return Avaiable;
         
     }
