@@ -58,12 +58,7 @@ import org.hibernate.Session;
                                 + "where usser.nickname ='"+nickname+"' & usser.password ='"+password+"'");
                     usser = (Usuario)login.uniqueResult(); 
                     session.save(usser);
-                    session.close();
-                    /*Usuario log = login.uniqueResult();
-                    if(login.getNickname().equals("admin") &&
-                       login.getPassword().equals("1234"){
-                    //¿?¿?¿?¿?
-                    */                                             
+                    session.close();                                           
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -72,6 +67,7 @@ import org.hibernate.Session;
         
         public void LogOut(){
             this.session = Hibernate.getSessionFactory().getCurrentSession();
+            session.close();
         }
         
         public List ViewEnrollment(int idusuario){
@@ -85,6 +81,7 @@ import org.hibernate.Session;
                 session.saveOrUpdate(Enrollments);
                 tx.commit();
                 session.close();
+                
             }catch (Exception e){
                 e.printStackTrace();
                 tx.rollback();
@@ -102,6 +99,7 @@ import org.hibernate.Session;
                 session.save(Runs);
                 tx.commit();
                 session.close();
+                
             }catch (Exception e){
                 e.printStackTrace();
                 tx.rollback();

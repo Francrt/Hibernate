@@ -6,13 +6,8 @@
 package Controlador;
 
 import Hibernate.Hibernate;
-import Modelo.Maraton;
-import Modelo.Usuario;
 import org.hibernate.Session;
 import Modelo.Usuariomaraton;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
 import org.hibernate.Query;
 /**
  *
@@ -25,18 +20,13 @@ import org.hibernate.Query;
         Usuariomaraton ussmara = new Usuariomaraton ();
         
         public int GiveDorsal(){
-            Random random = new Random();
-            int dorsal = random.nextInt(150);
-            Integer dbdorsal;
+            int dorsal = 0;
             this.session = Hibernate.getSessionFactory().getCurrentSession();
             org.hibernate.Transaction tx= session.beginTransaction();
             
             try{
-                Query ndorsal = session.createQuery("from Usuariomaraton as ussmarath where ussmarath.dorsal is '"+dorsal+"'");
-                dbdorsal = (Integer)ndorsal.uniqueResult();
-                if(dbdorsal == dorsal){
-                    ussmara.setDorsal(dorsal);
-                }else return 0;
+                Query ndorsal = session.createQuery("from Usuariomaraton as ussmarath select max(ussmarath.dorsal)");
+                dorsal = (Integer)ndorsal.uniqueResult();              
                 session.save(dorsal);
                 tx.commit();
                 session.close();

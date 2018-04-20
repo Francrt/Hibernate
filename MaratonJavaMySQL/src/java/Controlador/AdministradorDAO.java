@@ -6,7 +6,6 @@
 package Controlador;
 
 import Hibernate.Hibernate;
-import Modelo.Juez;
 import Modelo.Maraton;
 import Modelo.Usuario;
 import java.util.List;
@@ -21,7 +20,6 @@ public class AdministradorDAO extends UsuarioDAO {
     Session session = null;
     Maraton run = new Maraton();
     Usuario master = new Usuario();
-    Juez masterJ = new Juez();
     
     
     public List ShowUsserList(){
@@ -101,15 +99,20 @@ public class AdministradorDAO extends UsuarioDAO {
     }
     
     public List ShowJudgeList(int idjuez){
-        List<Juez> Judge = null;
-        try{
-            this.session = Hibernate.getSessionFactory().getCurrentSession();
-            org.hibernate.Transaction tx= session.beginTransaction();
-            Query jdg = session.createQuery("from Juez as judge where judge.IDJuez="+idjuez+"'");
-            Judge = (List<Juez>) jdg.list();
-            session.saveOrUpdate(Judge);            
+        List<Usuario> Judge = null;
+        this.session = Hibernate.getSessionFactory().getCurrentSession();
+        org.hibernate.Transaction tx= session.beginTransaction();
+        
+        try{         
+            Query jdg = session.createQuery("from Usuario as judge where judge.juez is 1");
+            Judge = (List<Usuario>) jdg.list();
+            session.saveOrUpdate(Judge);
+            tx.commit();
+            session.close();
+            
         }catch (Exception e){
             e.printStackTrace();
+            tx.rollback();
         }return Judge;
     }
     
@@ -128,21 +131,21 @@ public class AdministradorDAO extends UsuarioDAO {
         }return newMarathon;      
     }
     
-    public List GetMarathonData(Integer idmaraton, Integer idjuez){
+    public List GetMarathonData(Integer idmaraton, Integer idusuario){
         List<Maraton> Datamar = null;
         this.session = Hibernate.getSessionFactory().getCurrentSession();
         org.hibernate.Transaction tx= session.beginTransaction();
         
         try{
-            if (idmaraton != null && idjuez == null){
+            if (idmaraton != null && idusuario == null){
             Query dmar = session.createQuery("from Maraton as marathon where marathon.idmaraton='"+idmaraton+"'");  
             Datamar = (List<Maraton>) dmar.list();
             session.saveOrUpdate(Datamar);
             tx.commit();
             session.close();}
             
-        else if (idjuez != null && idmaraton == null){
-            Query dmar = session.createQuery("from Maraton as marathon where marathon.idjuez='"+idjuez+"'");
+        else if (idusuario != null && idmaraton == null){
+            Query dmar = session.createQuery("from Maraton as marathon where marathon.idusuario='"+idusuario+"'");
             Datamar = (List<Maraton>) dmar.list();
             session.saveOrUpdate(Datamar);
             tx.commit();   
