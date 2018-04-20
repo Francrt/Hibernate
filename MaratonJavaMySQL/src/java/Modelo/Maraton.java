@@ -38,6 +38,13 @@ public class Maraton  implements java.io.Serializable {
 
     public Maraton() {
     }
+    
+    public Maraton(String nombre, String longitud, String ubicacion, String fecha) {
+       this.nombre = nombre;
+       this.longitud = longitud;
+       this.ubicacion = ubicacion;
+       this.fecha = fecha;
+    }
 
     public Maraton(String nombre, String longitud, String ubicacion, String fecha, Set juezmaratons, Set usuariomaratons) {
        this.nombre = nombre;

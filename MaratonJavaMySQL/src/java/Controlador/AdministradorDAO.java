@@ -24,28 +24,37 @@ public class AdministradorDAO extends UsuarioDAO {
     
     public List ShowUsserList(){
         List<Usuario> Ussers = null;
+        this.session = Hibernate.getSessionFactory().getCurrentSession();
+        org.hibernate.Transaction tx = session.beginTransaction();
+        
             try{
-                this.session = Hibernate.getSessionFactory().getCurrentSession();
-                org.hibernate.Transaction tx = session.beginTransaction();
                 Query show = session.createQuery("from Usuario as usser where usser.Nickname is not null");
                 Ussers = (List<Usuario>) show.list();
                 session.save(Ussers);
+                tx.commit();
+                session.close();
                 
             }catch (Exception e){
                 e.printStackTrace();
+                tx.rollback();
             }return Ussers;
     }
     
     public List GetUsserData(int idusuario){
         List<Usuario> Data = null;
-        try{
-            this.session = Hibernate.getSessionFactory().getCurrentSession();
-            org. hibernate.Transaction tx = session.beginTransaction();
+        this.session = Hibernate.getSessionFactory().getCurrentSession();
+        org. hibernate.Transaction tx = session.beginTransaction();
+        
+        try{  
             Query getU = session.createQuery("from  Usuario as usser where usser.IDUsuario="+idusuario+"'");
             Data = (List<Usuario>) getU.list();
             session.saveOrUpdate(Data);
+            tx.commit();
+            session.close();
+            
         }catch (Exception e){
             e.printStackTrace();
+            tx.rollback();
             
         }return Data;
     }
@@ -98,7 +107,7 @@ public class AdministradorDAO extends UsuarioDAO {
         }return Data;
     }
     
-    public List ShowJudgeList(int idjuez){
+    public List ShowJudgeList(){
         List<Usuario> Judge = null;
         this.session = Hibernate.getSessionFactory().getCurrentSession();
         org.hibernate.Transaction tx= session.beginTransaction();
@@ -122,7 +131,7 @@ public class AdministradorDAO extends UsuarioDAO {
         try{
             newMarathon = true;
             this.session = Hibernate.getSessionFactory().getCurrentSession();
-            Maraton marathon = new Maraton(run.getFecha(), run.getLongitud(), run.getUbicacion() , run.getIdjuez());
+            Maraton marathon = new Maraton(run.getNombre(), run.getFecha(), run.getLongitud(), run.getUbicacion());
             session.save(marathon);
             
         }catch(Exception e){
@@ -156,20 +165,27 @@ public class AdministradorDAO extends UsuarioDAO {
         }return Datamar;
     }
     
-    public List GetMarathonData(String fecha, String ubicacion){
+    public List GetMarathonData(String  nombre, String fecha, String ubicacion){
         List<Maraton> Datamar = null;
             this.session = Hibernate.getSessionFactory().getCurrentSession();
             org.hibernate.Transaction tx= session.beginTransaction();
         try{
-            if(fecha != null && ubicacion == null){
+            if(fecha != null && ubicacion == null && nombre == null){
             Query dmar = session.createQuery("from Maraton as marathon where marathon.fecha="+fecha+"'");   
             Datamar = (List<Maraton>) dmar.list();
             session.saveOrUpdate(Datamar);
             tx.commit();
             session.close();}
             
-            else if (ubicacion != null && fecha == null){
+            else if (ubicacion != null && fecha == null && nombre == null){
             Query dmar = session.createQuery("from Maraton as marathon where marathon.ubicacion="+ubicacion+"'");   
+            Datamar = (List<Maraton>) dmar.list();
+            session.saveOrUpdate(Datamar);
+            tx.commit();   
+            session.close();}
+            
+            else if (nombre != null && fecha == null && ubicacion == null){
+            Query dmar = session.createQuery("from Maraton as marathon where marathon.nombre="+nombre+"'");   
             Datamar = (List<Maraton>) dmar.list();
             session.saveOrUpdate(Datamar);
             tx.commit();   
@@ -200,20 +216,41 @@ public class AdministradorDAO extends UsuarioDAO {
     
     public boolean CreateJudge(){
         boolean newJ = false;
-        /* int idjuez = 0;
-        for(idjuez = 0; idjuez <=200; idjuez++){*/
-
+        
         try{
             newJ = true;
+            Byte juez = 1;
             this.session = Hibernate.getSessionFactory().getCurrentSession();
-            Juez newJudge = new Juez(masterJ.getIDJuez(), masterJ.getIDUsuario());
+            Usuario newJudge = new Usuario(master.getDni(), master.getTelefono(), master.getNickname(), master.getPassword(), master.getEmail(), master.getAdmin(), juez);
             session.save(newJudge);
             session.close();
             
-        }catch (Exception e){
+        }catch (Exception e){ 
             e.printStackTrace();
         }     
         return newJ;
+    }
+    
+    public boolean UpdateToJudge(int nickname){
+        boolean upUj = false;       
+        this.session = Hibernate.getSessionFactory().getCurrentSession();
+        org.hibernate.Transaction tx = session.beginTransaction();
+        
+        try{
+            upUj = true;
+            Usuario improve;
+            Query update = session.createQuery("from Usuario as usser where usser.nickname='"+nickname+"'");
+            improve = (Usuario)update.uniqueResult();
+            improve.setJuez((byte) 1);
+            session.saveOrUpdate(improve);
+            tx.commit();
+            session.close();
+            
+        }catch(Exception e){
+            e.printStackTrace();
+            tx.rollback();
+        }
+        return upUj;
     }
     
     
@@ -236,14 +273,14 @@ public class AdministradorDAO extends UsuarioDAO {
             session.close();
     }
     
-    public List ShowJudgeAvaiability(int idjuez){
-        List<Juez> Avaiable = null;
+    public List ShowJudgeAvaiability(int idusuario){
+        List<Usuario> Avaiable = null;
         this.session = Hibernate.getSessionFactory().getCurrentSession();
         org.hibernate.Transaction tx= session.beginTransaction();
         
         try{         
-            Query jdav = session.createQuery("from Juez as judge where judge.IDJuez='"+idjuez+"' && is not in Usuariomaraton");
-            Avaiable = (List<Juez>) jdav.list();
+            Query jdav = session.createQuery("from Usuario as judge where judge.juez is 1 && is not in Juezmaraton");
+            Avaiable = (List<Usuario>) jdav.list();
             session.saveOrUpdate(Avaiable);
             tx.commit();
             session.close();   

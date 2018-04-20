@@ -8,6 +8,7 @@ package Controlador;
 import Hibernate.Hibernate;
 import org.hibernate.Session;
 import Modelo.Usuariomaraton;
+import Modelo.UsuariomaratonId;
 import org.hibernate.Query;
 /**
  *
@@ -19,14 +20,16 @@ import org.hibernate.Query;
         MaratonDAO runDAO = new MaratonDAO();
         Usuariomaraton ussmara = new Usuariomaraton ();
         
+        //Método para entregar dorsal.
         public int GiveDorsal(){
             int dorsal = 0;
             this.session = Hibernate.getSessionFactory().getCurrentSession();
             org.hibernate.Transaction tx= session.beginTransaction();
             
             try{
-                Query ndorsal = session.createQuery("from Usuariomaraton as ussmarath select max(ussmarath.dorsal)");
-                dorsal = (Integer)ndorsal.uniqueResult();              
+                Query ndorsal = session.createQuery("from Usuariomaraton as ussmarath select max(ussmarath.dorsal) & is not null");
+                dorsal= (Integer)ndorsal.uniqueResult();
+                dorsal += 1;               
                 session.save(dorsal);
                 tx.commit();
                 session.close();
@@ -39,13 +42,16 @@ import org.hibernate.Query;
             return dorsal;
         }
         
+        //Método para inscribirse.
         public boolean Inscribe(){
             boolean inscAnswer = false;
-            
+            UsuariomaratonId ussmaraid = null;
             try{
                 inscAnswer = true;
+                ussmaraid.getIdmaraton();
+                ussmaraid.getIdusuario();
                 this.session = Hibernate.getSessionFactory().getCurrentSession();
-                Usuariomaraton insc = new Usuariomaraton(ussmara.getMaraton(), ussmara.getUsuario(), runDAO.GiveDorsal());
+                Usuariomaraton insc = new Usuariomaraton(ussmaraid, ussmara.getMaraton(), ussmara.getUsuario());
                 session.save(insc);
                 
             }catch (Exception e){
@@ -54,11 +60,12 @@ import org.hibernate.Query;
             }return inscAnswer;
         }
         
-        
+        //Método para desIncsribirse de la maratón.
         public void Unscribe(int idusuario, int idmaraton){
              this.session = Hibernate.getSessionFactory().getCurrentSession();    
              Query unscrib = session.createQuery ("from Usuariomaraton as ussermarth "
                             + "where ussermarth.IDUsuario ='"+idusuario+"' & ussermarth.IDMaraton ='"+idmaraton+"'");
-            session.delete(unscrib);         
+             Usuariomaraton insmara = (Usuariomaraton)unscrib.uniqueResult();
+            session.delete(insmara);         
         }
 }

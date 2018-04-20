@@ -42,6 +42,25 @@ public class Usuario  implements java.io.Serializable {
     public Usuario() {
     }
 
+    public Usuario(String nickname, String password, String email, String telefono, String dni, Byte juez) {
+       this.nickname = nickname;
+       this.password = password;
+       this.email = email;
+       this.telefono = telefono;
+       this.dni = dni;
+       this.juez = juez;
+    }
+    
+    public Usuario(String nickname, String password, String email, String telefono, String dni, Byte admin, Byte juez) {
+       this.nickname = nickname;
+       this.password = password;
+       this.email = email;
+       this.telefono = telefono;
+       this.dni = dni;
+       this.admin = admin;
+       this.juez = juez;
+    }
+    
     public Usuario(String nickname, String password, String email, String telefono, String dni, Byte admin, Byte juez, Set juezmaratons, Set usuariomaratons) {
        this.nickname = nickname;
        this.password = password;
